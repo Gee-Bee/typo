@@ -104,10 +104,10 @@ class Article < Content
     end
 
     def search_with_pagination(search_hash, paginate_hash)
-      
+
       state = (search_hash[:state] and ["no_draft", "drafts", "published", "withdrawn", "pending"].include? search_hash[:state]) ? search_hash[:state] : 'no_draft'
-      
-      
+
+
       list_function  = ["Article.#{state}"] + function_search_no_draft(search_hash)
 
       if search_hash[:category] and search_hash[:category].to_i > 0
@@ -465,5 +465,15 @@ class Article < Content
     to = from + 1.day unless day.blank?
     to = to - 1 # pull off 1 second so we don't overlap onto the next day
     return from..to
+  end
+
+  def merge_with other_article_id
+    other_article_q = Article.where(id: other_article_id)
+    return nil if other_article_q.empty?
+    other_article = other_article_q.first
+    self.body = self.body + other_article.body
+    self.comments << other_article.comments
+    other_article.reload.destroy
+    self.save
   end
 end

@@ -4,3 +4,16 @@
   <%= render :partial => "form" %>
 
 <% end %>
+
+<% if @article.published? %>
+  <% form_action[:action] = 'merge' %>
+  <%= form_tag(form_action, method: :put) do %>
+
+    <div class=''>
+      <h4>Merge Article</h4>
+      <label>Article ID: <%= text_field_tag 'merge_with' %></label>
+      <input type='submit' value='Merge'/>
+    </div>
+
+  <% end %>
+<% end %>
